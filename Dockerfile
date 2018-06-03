@@ -13,4 +13,3 @@ EXPOSE 80
 COPY --from=builder /usr/local/openresty/luajit /usr/local/openresty/luajit
 COPY conf.d /etc/nginx/conf.d
 COPY src /app
-COPY vendor /vendor
