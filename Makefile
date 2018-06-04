@@ -15,8 +15,7 @@ clean:
 
 release: build
 	@docker login --username $(DOCKER_USER) --password $(DOCKER_PASS)
-
-#	@docker push $(IMG):$(TAG)
+	@docker push $(IMG):$(TAG)
 
 error:
 	@more $(CURDIR)/log/error_log.log
