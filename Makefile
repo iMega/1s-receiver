@@ -1,5 +1,5 @@
 TAG = latest
-IMG = imega/1s-receiver
+IMG = imegateleport/1s-receiver
 
 build:
 	@docker build -t $(IMG):$(TAG) .
@@ -19,3 +19,6 @@ release: build
 
 error:
 	@more $(CURDIR)/log/error_log.log
+
+deploy:
+	@curl -s -X POST -H "TOKEN: $(DEPLOY_TOKEN)" https://d.imega.ru -d '{"namespace":"imega-teleport", "project_name":"1s-receiver", "tag":"$(TAG)"}'
