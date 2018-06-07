@@ -1,12 +1,15 @@
 use Test::Nginx::Socket::Lua 'no_plan';
 
+our $HttpConfig = qq{
+    lua_package_path "./src/?.lua;/vendor/?.lua;;";
+};
+
 run_tests;
 
 __DATA__
 === TEST 1: Header Authorization is not set. Script must return a code of response equal 400
 
---- http_config
-    lua_package_path "/data/vendor/?.lua;;";
+--- http_config eval: $::HttpConfig
 
 --- config
     location /t {
@@ -23,8 +26,7 @@ GET /t
 
 === TEST 2: Header Authorization is empty. Script must return a code of response equal 400
 
---- http_config
-    lua_package_path "/data/vendor/?.lua;;";
+--- http_config eval: $::HttpConfig
 
 --- config
     location /t {
@@ -44,8 +46,7 @@ Authorization:
 
 === TEST 3: Header Authorization is not basic auth. Script must return a code of response equal 400
 
---- http_config
-    lua_package_path "/data/vendor/?.lua;;";
+--- http_config eval: $::HttpConfig
 
 --- config
     location /t {
@@ -65,8 +66,7 @@ Authorization: Basi Not base64
 
 === TEST 4: Header Authorization is not encode base64. Script must return a code of response equal 400
 
---- http_config
-    lua_package_path "/data/vendor/?.lua;;";
+--- http_config eval: $::HttpConfig
 
 --- config
     location /t {
@@ -85,9 +85,7 @@ Authorization: Basic Not base64
 
 
 === TEST 5: Creds is invalid. Script must return a code of response equal 400
-
---- http_config
-    lua_package_path "/data/vendor/?.lua;;";
+--- http_config eval: $::HttpConfig
 
 --- config
     location /t {
@@ -106,6 +104,7 @@ Authorization: Basic OWJkYmEwMjYtOTQwNS00ZmQ2LWFmZTEtOGJmYzE2OWQ2Njk0OmE3NmU3MTh
 
 
 === TEST 6: Graphql not responding. Script must return a code of response equal 400
+--- http_config eval: $::HttpConfig
 --- config
     set_by_lua $graphql_endpoint_uri 'return "/graphql"';
 
@@ -129,6 +128,7 @@ Authorization: Basic OWJkYmEwMjYtOTQwNS00ZmQ2LWFmZTEtOGJmYzE2OWQ2Njk0OmE3NmU3MTh
 
 === TEST 7: Optimistic. Script must return a code of response equal 200
 --- http_config
+    lua_package_path "./src/?.lua;/vendor/?.lua;;";
     server {
         listen 127.0.0.1:80;
 
@@ -153,8 +153,8 @@ Authorization: Basic OWJkYmEwMjYtOTQwNS00ZmQ2LWFmZTEtOGJmYzE2OWQ2Njk0OmE3NmU3MTh
                 },
             }
 
-            ngx.say(json.encode(body))
             ngx.status = ngx.HTTP_OK
+            ngx.say(json.encode(body))
             ngx.exit(ngx.HTTP_OK)
         }
     }

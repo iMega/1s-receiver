@@ -26,6 +26,22 @@ if strings.empty(login) then
     ngx.exit(ngx.status)
 end
 
-local fileLimit = 1048576 * tonumber(ngx.var.file_limit, 10) or 1048576
+local filename = ngx.var.arg_filename
 
-ngx.say("zip=yes\nfile_limit=" .. fileLimit)
+ngx.req.read_body()
+local body = ngx.var.request_body
+
+if strings.empty(body) then
+    ngx.status = ngx.HTTP_BAD_REQUEST
+    ngx.say("failure\n");
+    ngx.exit(ngx.status)
+end
+
+local path = "/data/source/" .. login
+os.execute("mkdir -p " .. path)
+
+file = io.open(path .. "/" .. filename, "a")
+file:write(body)
+file:close()
+
+ngx.say("success")

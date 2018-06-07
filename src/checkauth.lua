@@ -3,19 +3,11 @@ require "resty.validation.ngx"
 local validation = require "resty.validation"
 local base64     = require "base64"
 local json       = require "cjson"
-local inspect    = require "inspect"
+local strings    = require("common.strings")
 
 local headers = ngx.req.get_headers()
 
--- Determine whether a variable is empty
---
--- @return bool
---
-local function empty(value)
-    return value == nil or value == ''
-end
-
-if empty(headers["Authorization"]) then
+if strings.empty(headers["Authorization"]) then
     ngx.log(ngx.ERR, "checkauth header Authorization is empty")
     ngx.status = ngx.HTTP_BAD_REQUEST
     ngx.say("failure\n");
@@ -24,14 +16,14 @@ end
 
 local matchPiece = ngx.re.match(headers["Authorization"], "Basic\\s(.+)")
 
-if empty(matchPiece) then
+if strings.empty(matchPiece) then
     ngx.log(ngx.ERR, "checkauth failed to match regexp from header Authorization")
     ngx.status = ngx.HTTP_BAD_REQUEST
     ngx.say("failure\n");
     ngx.exit(ngx.status)
 end
 
-if empty(matchPiece[1]) then
+if strings.empty(matchPiece[1]) then
     ngx.log(ngx.ERR, "checkauth creds is empty from header Authorization")
     ngx.status = ngx.HTTP_BAD_REQUEST
     ngx.say("failure\n");
@@ -96,7 +88,7 @@ if not ok then
     ngx.exit(ngx.status)
 end
 
-if empty(body) then
+if strings.empty(body) then
     ngx.log(ngx.ERR, "checkauth response is empty")
     ngx.status = ngx.HTTP_INTERNAL_SERVER_ERROR
     ngx.exit(ngx.status)

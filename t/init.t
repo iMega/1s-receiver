@@ -6,7 +6,7 @@ __DATA__
 === TEST 1: Send without header cookie. Script must return a code of response equal 400
 
 --- http_config
-    lua_package_path "/vendor/?.lua;;";
+    lua_package_path "./src/?.lua;/vendor/?.lua;;";
 
 --- config
     location /t {
@@ -17,14 +17,14 @@ __DATA__
 GET /t
 
 --- error_code: 400
-
+--- error_log: header Cookie is empty
 
 
 
 === TEST 2: Send empty header cookie. Script must return a code of response equal 400
 
 --- http_config
-    lua_package_path "/vendor/?.lua;;";
+    lua_package_path "./src/?.lua;/vendor/?.lua;;";
 
 --- config
     location /t {
@@ -38,13 +38,14 @@ GET /t
 Cookie:
 
 --- error_code: 400
+--- error_log: header Cookie is empty
 
 
 
 === TEST 3: Header cookie not have token. Script must return a code of response equal 400
 
 --- http_config
-    lua_package_path "/vendor/?.lua;;";
+    lua_package_path "./src/?.lua;/vendor/?.lua;;";
 
 --- config
     location /t {
@@ -58,13 +59,14 @@ GET /t
 Cookie: without token
 
 --- error_code: 400
+--- error_log: init failed to match regexp from header Cookie
 
 
 
 === TEST 4: Graphql is down. Script must return a code of response equal 500
 
 --- http_config
-    lua_package_path "/vendor/?.lua;;";
+    lua_package_path "./src/?.lua;/vendor/?.lua;;";
 
 --- config
     set_by_lua $graphql_endpoint_uri 'return "/graphql"';
@@ -87,6 +89,7 @@ GET /t
 Cookie: token=eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiIxMjM0NTY3ODkwIiwibmFtZSI6IkpvaG4gRG9lIiwiaWF0IjoxNTE2MjM5MDIyfQ.SflKxwRJSMeKKF2QT4fwpMeJf36POk6yJV_adQssw5c; co=sdlvmksflk
 
 --- error_code: 500
+--- error_log: init: graphql returns http code is not 200
 
 
 
@@ -94,15 +97,15 @@ Cookie: token=eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiIxMjM0NTY3ODkwIiwib
 === TEST 5: Graphql returns skewed response. Script must return a code of response equal 500
 
 --- http_config
-    lua_package_path "/vendor/?.lua;;";
+    lua_package_path "./src/?.lua;/vendor/?.lua;;";
 
 --- config
     set_by_lua $graphql_endpoint_uri 'return "/graphql"';
 
     location /graphql {
         content_by_lua_block {
-            ngx.say("{data[")
             ngx.status = 200
+            ngx.say("{data[")
             ngx.exit(200)
         }
     }
@@ -118,22 +121,22 @@ GET /t
 Cookie: token=eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiIxMjM0NTY3ODkwIiwibmFtZSI6IkpvaG4gRG9lIiwiaWF0IjoxNTE2MjM5MDIyfQ.SflKxwRJSMeKKF2QT4fwpMeJf36POk6yJV_adQssw5c; co=sdlvmksflk
 
 --- error_code: 500
-
+--- error_log: init failed decode json from graphql-server returns skewed json
 
 
 
 === TEST 6: Graphql returns empty response. Script must return a code of response equal 500
 
 --- http_config
-    lua_package_path "/vendor/?.lua;;";
+    lua_package_path "./src/?.lua;/vendor/?.lua;;";
 
 --- config
     set_by_lua $graphql_endpoint_uri 'return "/graphql"';
 
     location /graphql {
         content_by_lua_block {
-            ngx.say("")
             ngx.status = 200
+            ngx.say("")
             ngx.exit(200)
         }
     }
@@ -149,15 +152,16 @@ GET /t
 Cookie: token=eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiIxMjM0NTY3ODkwIiwibmFtZSI6IkpvaG4gRG9lIiwiaWF0IjoxNTE2MjM5MDIyfQ.SflKxwRJSMeKKF2QT4fwpMeJf36POk6yJV_adQssw5c; co=sdlvmksflk
 
 --- error_code: 500
+--- error_log: init failed decode json from graphql-server returns skewed json
 
 
 
 
 
-=== TEST 6: Header cookie have skewed token. Script must return a code of response equal 401
+=== TEST 7: Header cookie have skewed token. Script must return a code of response equal 401
 
 --- http_config
-    lua_package_path "/vendor/?.lua;;";
+    lua_package_path "./src/?.lua;/vendor/?.lua;;";
 
 --- config
     set_by_lua $graphql_endpoint_uri 'return "/graphql"';
@@ -174,8 +178,8 @@ Cookie: token=eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiIxMjM0NTY3ODkwIiwib
                 },
             }
 
-            ngx.say(json.encode(body))
             ngx.status = 200
+            ngx.say(json.encode(body))
             ngx.exit(200)
         }
     }
@@ -191,13 +195,13 @@ GET /t
 Cookie: token=eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiIxMjM0NTY3ODkwIiwibmFtZSI6IkpvaG4gRG9lIiwiaWF0IjoxNTE2MjM5MDIyfQ.SflKxwRJSMeKKF2QT4fwpMeJf36POk6yJV_adQssw5c; co=sdlvmksflk
 
 --- error_code: 401
+--- error_log: init response from graphql-server unauthorized
 
 
-
-=== TEST 7: Optimistic. Script must return a code of response equal 200
+=== TEST 8: Optimistic. Script must return a code of response equal 200
 
 --- http_config
-    lua_package_path "/vendor/?.lua;;";
+    lua_package_path "./src/?.lua;/vendor/?.lua;;";
 
 --- config
     set_by_lua $graphql_endpoint_uri 'return "/graphql"';
@@ -215,8 +219,8 @@ Cookie: token=eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiIxMjM0NTY3ODkwIiwib
                 },
             }
 
-            ngx.say(json.encode(body))
             ngx.status = 200
+            ngx.say(json.encode(body))
             ngx.exit(200)
         }
     }
