@@ -64,7 +64,7 @@ local validData = values("valid")
 
 local data = {
     operationName = "CreateToken",
-    query = "mutation CreateToken($login: String, $pass: String) { createToken(login: $login, pass: $pass) { token } }",
+    query = "mutation CreateToken($login: ID!, $pass: String!) { createToken(id: $login, pass: $pass) }",
     variables = validData,
 }
 
