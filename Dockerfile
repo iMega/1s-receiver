@@ -10,6 +10,7 @@ EXPOSE 80
 COPY --from=builder /usr/local/openresty/luajit /usr/local/openresty/luajit
 COPY conf.d /etc/nginx/conf.d
 COPY src /app
+WORKDIR /app
 
 RUN ln -sf /dev/stdout /var/log/nginx_access.log && \
     ln -sf /dev/stderr /var/log/nginx_error.log
