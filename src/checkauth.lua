@@ -3,7 +3,7 @@ require "resty.validation.ngx"
 local validation = require "resty.validation"
 local base64     = require "base64"
 local json       = require "cjson"
-local strings    = require("common.strings")
+local strings    = require "common.strings"
 
 local headers = ngx.req.get_headers()
 
@@ -69,14 +69,14 @@ local data = {
 }
 
 res = ngx.location.capture(
-    ngx.var.graphql_endpoint_uri,
+    "/graphql",
     {
         method = ngx.HTTP_POST,
         body = json.encode(data),
     }
 )
 if res.status ~= ngx.HTTP_OK then
-    ngx.log(ngx.ERR, "checkauth: graphql returns http code is not 200")
+    ngx.log(ngx.ERR, "checkauth: graphql returns http code is not 200, retuns code " .. res.status)
     ngx.status = ngx.HTTP_INTERNAL_SERVER_ERROR
     ngx.exit(ngx.status)
 end
