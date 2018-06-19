@@ -147,7 +147,7 @@ Authorization: Basic OWJkYmEwMjYtOTQwNS00ZmQ2LWFmZTEtOGJmYzE2OWQ2Njk0OmE3NmU3MTh
 
             local body = {
                 data = {
-                    updateToken = {
+                    createToken = {
                         token = "this-is-token",
                     },
                 },

@@ -89,12 +89,12 @@ if not ok then
     ngx.exit(ngx.status)
 end
 
-if strings.empty(body) then
+if strings.empty(body['data']) then
     ngx.log(ngx.ERR, "checkauth response is empty")
     ngx.status = ngx.HTTP_INTERNAL_SERVER_ERROR
     ngx.exit(ngx.status)
 end
 
-token = body['data']['updateToken']['token']
+token = body['data']['createToken']['token']
 
 ngx.say("success\ntoken\n" .. token)
