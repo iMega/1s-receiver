@@ -4,7 +4,7 @@ local strings = require("common.strings")
 local function getLoginByToken(token)
     local data = {
         operationName = "CheckToken",
-        query = "query CheckToken($token: String!) { checkToken(token: $token) { login } }",
+        query = "query CheckToken($token: String!) { checkToken(token: $token) { id } }",
         variables = {
             token = token,
         },
@@ -26,11 +26,11 @@ local function getLoginByToken(token)
         return nil, "init failed decode json from graphql-server returns skewed json"
     end
 
-    if strings.empty(body) then
+    if strings.empty(body['data']) then
         return nil, "init response from graphql-server is empty"
     end
 
-    local login = body['data']['checkToken']['login']
+    local login = body['data']['checkToken']['id']
 
     return login, nil
 end
