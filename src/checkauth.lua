@@ -68,7 +68,7 @@ local data = {
     variables = validData,
 }
 
-ngx.req.set_header("GRPC-METADATA-X-OWNER-ID", "empty")
+ngx.req.set_header("GRPC-METADATA-X-OWNER-ID", validData["login"])
 res = ngx.location.capture(
     "/graphql",
     {
