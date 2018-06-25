@@ -48,8 +48,8 @@ local credentials = {
 }
 
 local validatorCredentials = validation.new{
-    login = validation.string.trim:len(36,36),
-    pass  = validation.string.trim:len(36,36),
+    login = validation.string.trim:len(32,32),
+    pass  = validation.string.trim:len(6,36),
 }
 
 local ok, values = validatorCredentials(credentials)
