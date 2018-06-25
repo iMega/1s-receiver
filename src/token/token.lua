@@ -11,7 +11,7 @@ local function getLoginByToken(token)
     }
 
     res = ngx.location.capture(
-        ngx.var.graphql_endpoint_uri,
+        "/graphql",
         {
             method = ngx.HTTP_POST,
             body = json.encode(data),
