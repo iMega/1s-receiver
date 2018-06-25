@@ -10,6 +10,7 @@ local function getLoginByToken(token)
         },
     }
 
+    ngx.req.set_header("GRPC-METADATA-X-OWNER-ID", "owner")
     res = ngx.location.capture(
         "/graphql",
         {
