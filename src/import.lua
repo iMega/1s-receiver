@@ -9,10 +9,7 @@ local handler = function (premature, login)
 
     ngx.log(ngx.INFO, "import start decompress file: " .. path)
 
-    local reader = assert(io.popen("unzip " .. path .. "/* -d " .. path .. "/unziped", "r"))
-    local stdout = assert(reader:read('*a'))
-    ngx.log(ngx.INFO, "unzip: " .. stdout)
-    reader:close()
+    os.execute("unzip " .. path .. "/* -d " .. path .. "/unziped")
 
     ngx.log(ngx.INFO, "import end decompress file: " .. path)
 end
