@@ -7,6 +7,7 @@ FROM openresty/openresty:alpine
 RUN apk --no-cache add unzip
 EXPOSE 80
 
+RUN echo "env FILE_LIMIT;" >> /usr/local/openresty/nginx/conf/nginx.conf
 COPY --from=builder /usr/local/openresty/luajit /usr/local/openresty/luajit
 COPY conf.d /etc/nginx/conf.d
 COPY src /app
