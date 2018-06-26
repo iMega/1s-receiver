@@ -95,6 +95,6 @@ if strings.empty(body['data']) then
     ngx.exit(ngx.status)
 end
 
-token = body['data']['createToken']['token']
+token = body['data']['createToken']
 
 ngx.say("success\ntoken\n" .. token)
