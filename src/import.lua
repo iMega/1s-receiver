@@ -4,15 +4,17 @@ local strings = require("common.strings")
 
 local headers = ngx.req.get_headers()
 
-local handler = function (premature, login, filename)
+local handler = function (premature, login)
     local path = "/data/source/" .. login
-    local file = path .. "/" .. filename
 
-    ngx.log(ngx.INFO, "import start decompress file: " .. file)
+    ngx.log(ngx.INFO, "import start decompress file: " .. path)
 
-    os.execute("unzip " .. file .. " -d " .. path .. "/unziped")
+    local reader = assert(io.popen(os.execute("unzip " .. path .. "/* -d " .. path .. "/unziped"), "r"))
+    local stdout = assert(reader:read('*a'))
+    ngx.log(ngx.INFO, "unzip: " .. stdout)
+    reader:close()
 
-    ngx.log(ngx.INFO, "import end decompress file: " .. file)
+    ngx.log(ngx.INFO, "import end decompress file: " .. path)
 end
 
 local t, err = cookie.getTokenFromCookie(headers)
@@ -37,7 +39,7 @@ if strings.empty(login) then
     ngx.exit(ngx.status)
 end
 
-local ok, err = ngx.timer.at(0, handler, login, ngx.var.arg_filename)
+local ok, err = ngx.timer.at(0, handler, login)
 if not ok then
     ngx.log(ngx.ERR, "failed to create the timer: ", err)
     return
