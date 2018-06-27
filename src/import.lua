@@ -12,6 +12,11 @@ local handler = function (premature, login)
     os.execute("unzip " .. path .. "/* -d " .. path .. "/unziped")
 
     ngx.log(ngx.INFO, "import end decompress file: " .. path)
+
+    res = ngx.location.capture("/parser/" .. login)
+    if res.status ~= ngx.HTTP_OK then
+        return nil, "import: parser returns http code is not 200, " .. res.status
+    end
 end
 
 local t, err = cookie.getTokenFromCookie(headers)
